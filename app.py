@@ -39,15 +39,18 @@ def send_request(url):
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
 def send_requests_parallel(urls):
-    with ThreadPoolExecutor(max_workers=5) as executor:  # 最大5つのスレッドで並列実行
-        executor.map(send_request, urls)
+    with ThreadPoolExecutor() as executor:
+        results = executor.map(send_request, urls)
+    return results
 
 # //ーーーーーーーーーーーーーーーーーーーーー
 @app.route("/", methods=["POST"])
 def getPost() -> str:
     logger.info("Process started.")
     
-    send_requests_parallel(urls)
+    results = send_requests_parallel(urls)
+    for result in results:
+        print(result.status_code)
 
     logger.info("Process completed.")
     return "Completed."
