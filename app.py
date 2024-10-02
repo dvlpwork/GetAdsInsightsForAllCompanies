@@ -20,18 +20,37 @@ from flask import Flask
 
 from utils.logging import logger
 
+import requests
+from concurrent.futures import ThreadPoolExecutor
+
+# //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 app = Flask(__name__)
 
+urls = [
+    "https://ja.wikipedia.org/wiki/%E3%83%A1%E3%82%A4%E3%83%B3%E3%83%9A%E3%83%BC%E3%82%B8",
+    "https://ja.wikipedia.org/wiki/%E9%98%BF%E8%B3%80%E7%A5%9E%E7%A4%BE",
+    "https://ja.wikipedia.org/wiki/%E5%88%A5%E8%A1%A8%E7%A5%9E%E7%A4%BE"
+]
 
-@app.route("/")
-def hello() -> str:
-    # Use basic logging with custom fields
-    logger.info(logField="custom-entry", arbitraryField="custom-entry")
+# //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+def send_request(url):
+    response = requests.get(url)
+    return response
 
-    # https://cloud.google.com/run/docs/logging#correlate-logs
-    logger.info("Child logger with trace Id.")
+# //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
+def send_requests_parallel(urls):
+    with ThreadPoolExecutor(max_workers=5) as executor:  # 最大5つのスレッドで並列実行
+        executor.map(send_request, urls)
 
-    return "Hello, World!"
+# //ーーーーーーーーーーーーーーーーーーーーー
+@app.route("/", methods=["POST"])
+def getPost() -> str:
+    logger.info("Process started.")
+    
+    send_requests_parallel(urls)
+
+    logger.info("Process completed.")
+    return "Completed."
 
 
 def shutdown_handler(signal_int: int, frame: FrameType) -> None:
