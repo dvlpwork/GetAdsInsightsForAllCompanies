@@ -91,9 +91,12 @@ def getPost() -> str:
     try:
         logger.info("rows: ",rows)
         logger.info("rows type: ",type(rows))
-        logger.info("rows type: ",type(rows["message"]))
     except:
-        logger.info("failed.")
+        logger.info("failed 1")
+
+    try:
+        for i in rows:
+            logger.info(i)
     
     # results = send_requests_parallel()
     # for result in results:
