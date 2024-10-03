@@ -89,8 +89,9 @@ def getPost() -> str:
 
     rows = get_data_from_bigquery()
     try:
-        logger.info("rows: ",rows)
-        logger.info("rows type: ",type(rows))
+        logger.info(rows)
+        logger.info(type(rows))
+        logger.info(rows["message"])
     except:
         logger.info("failed 1")
 
