@@ -26,29 +26,45 @@ from concurrent.futures import ThreadPoolExecutor
 # //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 app = Flask(__name__)
 
-urls = [
-    "https://ja.wikipedia.org/wiki/%E3%83%A1%E3%82%A4%E3%83%B3%E3%83%9A%E3%83%BC%E3%82%B8",
-    "https://ja.wikipedia.org/wiki/%E9%98%BF%E8%B3%80%E7%A5%9E%E7%A4%BE",
-    "https://ja.wikipedia.org/wiki/%E5%88%A5%E8%A1%A8%E7%A5%9E%E7%A4%BE"
+URL_GET_ADS_INSIGHTS = "http://example.com"
+dummy_database = [
+    "00000",
+    "11111",
+    "22222"
 ]
 
 # //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
-def send_request(url):
-    response = requests.get(url)
+def get_payloads():
+    account_id_list = dummy_database
+    payloads = []
+    for account_id in account_id_list:
+        payload = {
+            "argments":{
+                "account_id":account_id
+            }
+        }
+        payloads.append(payload)
+    return payloads
+
+# //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
+def send_request(payload):
+    response = requests.post(URL_GET_ADS_INSIGHTS,json=payload)
     return response
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
-def send_requests_parallel(urls):
+def send_requests_parallel():
     with ThreadPoolExecutor() as executor:
-        results = executor.map(send_request, urls)
-    return results
+        payloads = get_payloads()
+        results = executor.map(send_request, payloads)
+        for res in results:
+            print(res.status_code)
 
 # //ーーーーーーーーーーーーーーーーーーーーー
 @app.route("/", methods=["POST"])
 def getPost() -> str:
     logger.info("Process started.")
     
-    results = send_requests_parallel(urls)
+    results = send_requests_parallel()
     for result in results:
         print(result.status_code)
 
