@@ -39,7 +39,6 @@ dummy_database = [
 def get_data_from_bigquery():
     # クライアントの初期化
     client = bigquery.Client()
-    print(client.project)
 
     # 実行するクエリ
     query = """
@@ -89,7 +88,12 @@ def getPost() -> str:
     logger.info("Process started.")
 
     rows = get_data_from_bigquery()
-    logger.info(rows)
+    try:
+        logger.info("rows: ",rows)
+        logger.info("rows type: ",type(rows))
+        logger.info("rows type: ",type(rows["message"]))
+    except:
+        logger.info("failed.")
     
     # results = send_requests_parallel()
     # for result in results:
