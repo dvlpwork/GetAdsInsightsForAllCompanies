@@ -88,18 +88,14 @@ def getPost() -> str:
     logger.info("Process started.")
 
     rows = get_data_from_bigquery()
-    try:
-        logger.info(rows)
-        logger.info(type(rows))
-        logger.info(rows["message"])
-    except:
-        logger.info("failed 1")
 
     try:
+        print(len(rows))
+        print(rows[0])
         for i in rows:
             logger.info(i)
     except:
-        logger.info("failed 2")
+        logger.info("failed")
     
     # results = send_requests_parallel()
     # for result in results:
