@@ -23,6 +23,8 @@ from utils.logging import logger
 import requests
 from concurrent.futures import ThreadPoolExecutor
 
+from google.cloud import bigquery
+
 # //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 app = Flask(__name__)
 
@@ -34,6 +36,27 @@ dummy_database = [
 ]
 
 # //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+def get_data_from_bigquery():
+    # クライアントの初期化
+    client = bigquery.Client()
+
+    # 実行するクエリ
+    query = """
+    SELECT *
+    FROM `adsanalytics-437205.Master.ad_accounts`
+    LIMIT 10
+    """
+
+    # クエリの実行
+    query_job = client.query(query)
+    
+    # 結果を取得してリストに変換
+    results = query_job.result()
+    rows = [dict(row) for row in results]
+
+    return rows
+
+# //ーーーーーーーーーーーーーーーーーーーーー
 def get_payloads():
     account_id_list = dummy_database
     payloads = []
