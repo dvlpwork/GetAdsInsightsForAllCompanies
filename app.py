@@ -39,6 +39,7 @@ dummy_database = [
 def get_data_from_bigquery():
     # クライアントの初期化
     client = bigquery.Client()
+    print(client.project)
 
     # 実行するクエリ
     query = """
@@ -82,8 +83,8 @@ def send_requests_parallel():
         for res in results:
             print(res.status_code)
 
-# //ーーーーーーーーーーーーーーーーーーーーー
-@app.route("/", methods=["POST"])
+# //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+@app.route("/", methods=["GET","POST"])
 def getPost() -> str:
     logger.info("Process started.")
     
