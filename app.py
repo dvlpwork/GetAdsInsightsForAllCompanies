@@ -56,14 +56,22 @@ def get_data_from_bigquery():
 
     return rows
 
+
+def get_dataset_id_list():
+    rows = get_data_from_bigquery()
+    dataset_id_list = []
+    for row in rows:
+        dataset_id_list.append(row)
+    return dataset_id_list
+
 # //ーーーーーーーーーーーーーーーーーーーーー
 def get_payloads():
-    account_id_list = dummy_database
+    dataset_id_list =  get_dataset_id_list()
     payloads = []
-    for account_id in account_id_list:
+    for dataset_id in dataset_id_list:
         payload = {
             "argments":{
-                "account_id":account_id
+                "dataset_id":dataset_id
             }
         }
         payloads.append(payload)
@@ -78,30 +86,20 @@ def send_request(payload):
 def send_requests_parallel():
     with ThreadPoolExecutor() as executor:
         payloads = get_payloads()
-        results = executor.map(send_request, payloads)
-        for res in results:
+        responses = executor.map(send_request, payloads)
+        for res in responses:
             print(res.status_code)
 
 # //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 @app.route("/", methods=["GET","POST"])
 def getPost() -> str:
-    logger.info("Process started.")
-
-    rows = get_data_from_bigquery()
-
-    try:
-        print(len(rows))
-        print(rows[0])
-        for i in rows:
-            logger.info(i)
-    except:
-        logger.info("failed")
+    print("Process started.")
     
-    # results = send_requests_parallel()
-    # for result in results:
-    #     print(result.status_code)
+    results = send_requests_parallel()
+    for result in results:
+        print(result.status_code)
 
-    logger.info("Process completed.")
+    print("Process completed.")
     return "Completed."
 
 
