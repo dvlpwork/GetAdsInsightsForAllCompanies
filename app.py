@@ -87,10 +87,13 @@ def send_requests_parallel():
 @app.route("/", methods=["GET","POST"])
 def getPost() -> str:
     logger.info("Process started.")
+
+    rows = get_data_from_bigquery()
+    logger.info(rows)
     
-    results = send_requests_parallel()
-    for result in results:
-        print(result.status_code)
+    # results = send_requests_parallel()
+    # for result in results:
+    #     print(result.status_code)
 
     logger.info("Process completed.")
     return "Completed."
