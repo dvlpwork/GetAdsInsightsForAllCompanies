@@ -36,7 +36,7 @@ dummy_database = [
 ]
 
 # //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
-def get_data_from_bigquery():
+def get_ad_accounts_from_bigquery():
     # クライアントの初期化
     client = bigquery.Client()
 
@@ -57,21 +57,22 @@ def get_data_from_bigquery():
     return rows
 
 
-def get_dataset_id_list():
-    rows = get_data_from_bigquery()
-    dataset_id_list = []
-    for row in rows:
-        dataset_id_list.append(row)
-    return dataset_id_list
+# def get_dataset_id_list():
+#     rows = get_data_from_bigquery()
+#     dataset_id_list = []
+#     for row in rows:
+#         dataset_id_list.append(row)
+#     return dataset_id_list
 
 # //ーーーーーーーーーーーーーーーーーーーーー
 def get_payloads():
-    dataset_id_list =  get_dataset_id_list()
+    ad_accounts = get_ad_accounts_from_bigquery()
     payloads = []
-    for dataset_id in dataset_id_list:
+    for account in ad_accounts:
         payload = {
             "argments":{
-                "dataset_id":dataset_id
+                "account_id":account["id"],
+                "dataset_id":account["dataset_id"]
             }
         }
         payloads.append(payload)
