@@ -28,7 +28,7 @@ from google.cloud import bigquery
 # //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 app = Flask(__name__)
 
-URL_GET_ADS_INSIGHTS = "http://example.com"
+URL_GET_ADS_INSIGHTS = "https://adsanalytics-55978488217.asia-northeast1.run.app"
 dummy_database = [
     "00000",
     "11111",
@@ -78,13 +78,14 @@ def send_request(payload):
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
 def send_requests_parallel():
     print("Parallel requests started.")
+
     with ThreadPoolExecutor() as executor:
         payloads = get_payloads()
         responses = executor.map(send_request, payloads)
-        print("Parallel requests completed.")
-        print(f"responses type: {type(responses)}")
         for res in responses:
             print(res.status_code)
+
+    print("Parallel requests completed.")
 
 # //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 @app.route("/", methods=["GET","POST"])
