@@ -29,28 +29,18 @@ from google.cloud import bigquery
 app = Flask(__name__)
 
 URL_GET_ADS_INSIGHTS = "https://adsanalytics-55978488217.asia-northeast1.run.app"
-dummy_database = [
-    "00000",
-    "11111",
-    "22222"
-]
 
 # //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 def get_ad_accounts_from_bigquery():
-    # クライアントの初期化
     client = bigquery.Client()
 
-    # 実行するクエリ
     query = """
     SELECT *
     FROM `adsanalytics-437205.Master.ad_accounts`
     LIMIT 10
     """
-
-    # クエリの実行
     query_job = client.query(query)
     
-    # 結果を取得してリストに変換
     results = query_job.result()
     rows = [dict(row) for row in results]
 
