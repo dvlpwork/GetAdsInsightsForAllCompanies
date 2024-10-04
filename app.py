@@ -96,6 +96,8 @@ def send_requests_parallel():
 @app.route("/", methods=["GET","POST"])
 def getPost() -> str:
     print("Process started.")
+
+    init_google_authentication()
     
     results = send_requests_parallel()
     for result in results:
