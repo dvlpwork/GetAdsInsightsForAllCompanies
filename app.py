@@ -77,9 +77,12 @@ def send_request(payload):
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
 def send_requests_parallel():
+    print("Parallel requests started.")
     with ThreadPoolExecutor() as executor:
         payloads = get_payloads()
         responses = executor.map(send_request, payloads)
+        print("Parallel requests completed.")
+        print(f"responses type: {type(responses)}")
         for res in responses:
             print(res.status_code)
 
