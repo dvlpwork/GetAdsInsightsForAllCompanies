@@ -58,7 +58,6 @@ def init_google_authentication():
     headers = {
         "Authorization": f"Bearer {id_token_credential}"
     }
-    print(headers)
 
 # //ーーーーーーーーーーーーーーーーーーーーー
 def get_payloads():
@@ -98,7 +97,7 @@ def getPost() -> str:
     print("Process started.")
 
     init_google_authentication()
-    
+
     results = send_requests_parallel()
     for result in results:
         print(result.status_code)
