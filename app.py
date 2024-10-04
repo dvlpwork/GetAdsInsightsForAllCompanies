@@ -56,14 +56,6 @@ def get_ad_accounts_from_bigquery():
 
     return rows
 
-
-# def get_dataset_id_list():
-#     rows = get_data_from_bigquery()
-#     dataset_id_list = []
-#     for row in rows:
-#         dataset_id_list.append(row)
-#     return dataset_id_list
-
 # //ーーーーーーーーーーーーーーーーーーーーー
 def get_payloads():
     ad_accounts = get_ad_accounts_from_bigquery()
