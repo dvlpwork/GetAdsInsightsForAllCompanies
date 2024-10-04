@@ -68,7 +68,7 @@ def get_payloads():
     payloads = []
     for account in ad_accounts:
         payload = {
-            "argments":{
+            "arguments":{
                 "account_id":account["id"],
                 "dataset_id":account["dataset_id"]
             }
