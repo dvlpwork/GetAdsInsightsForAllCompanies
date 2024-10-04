@@ -74,6 +74,7 @@ def send_requests_parallel():
         responses = executor.map(send_request, payloads)
         for res in responses:
             print(res.status_code)
+            print(res.text)
 
     print("Parallel requests completed.")
 
