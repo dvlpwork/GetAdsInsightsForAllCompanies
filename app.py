@@ -89,11 +89,9 @@ def send_requests_parallel():
         payloads = get_payloads()
         headers_list = [headers for _ in range(len(payloads))]
         responses = executor.map(send_request, payloads,headers_list)
-        for res in responses:
-            print(res.status_code)
-            print(res.text)
 
     print("Parallel requests completed.")
+    return responses
 
 # //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 @app.route("/", methods=["GET","POST"])
