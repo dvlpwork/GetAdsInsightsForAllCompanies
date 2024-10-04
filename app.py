@@ -33,6 +33,8 @@ app = Flask(__name__)
 
 URL_GET_ADS_INSIGHTS = "https://adsanalytics-55978488217.asia-northeast1.run.app"
 
+headears = {}
+
 # //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 def get_ad_accounts_from_bigquery():
     client = bigquery.Client()
@@ -51,6 +53,7 @@ def get_ad_accounts_from_bigquery():
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
 def init_google_authentication():
+    global headers
     credentials, project = google.auth.default()
     auth_req = Request()
     id_token_credential = id_token.fetch_id_token(auth_req, URL_GET_ADS_INSIGHTS)
@@ -74,8 +77,8 @@ def get_payloads():
     return payloads
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
-def send_request(payload):
-    response = requests.post(URL_GET_ADS_INSIGHTS,json=payload)
+def send_request(payload,headers):
+    response = requests.post(URL_GET_ADS_INSIGHTS,json=payload,headers=headers)
     return response
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
@@ -84,7 +87,8 @@ def send_requests_parallel():
 
     with ThreadPoolExecutor() as executor:
         payloads = get_payloads()
-        responses = executor.map(send_request, payloads)
+        headers_list = [headers for _ in range(len(payloads))]
+        responses = executor.map(send_request, payloads,headers_list)
         for res in responses:
             print(res.status_code)
             print(res.text)
