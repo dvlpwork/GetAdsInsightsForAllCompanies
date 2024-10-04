@@ -24,6 +24,8 @@ import requests
 from concurrent.futures import ThreadPoolExecutor
 
 from google.cloud import bigquery
+from google.auth.transport.requests import Request
+from google.oauth2 import id_token
 
 # //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 app = Flask(__name__)
@@ -45,6 +47,17 @@ def get_ad_accounts_from_bigquery():
     rows = [dict(row) for row in results]
 
     return rows
+
+# //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
+def init_google_authentication():
+    credentials, project = google.auth.default()
+    auth_req = Request()
+    id_token_credential = id_token.fetch_id_token(auth_req, URL_GET_ADS_INSIGHTS)
+
+    headers = {
+        "Authorization": f"Bearer {id_token_credential}"
+    }
+    print(headers)
 
 # //ーーーーーーーーーーーーーーーーーーーーー
 def get_payloads():
