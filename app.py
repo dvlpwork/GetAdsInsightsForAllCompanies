@@ -107,7 +107,7 @@ def getPost() -> str:
 
     results = send_requests_parallel()
     for result in results:
-        if results == None:
+        if results is None:
             print("None")
         else:
             print(result.status_code)
