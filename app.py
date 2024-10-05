@@ -82,7 +82,8 @@ def send_request(payload,headers):
         response = session.post(URL_GET_ADS_INSIGHTS,json=payload,headers=headers,timeout=2)
         return response
     except requests.RequestException as e:
-        logger.info(e)
+        logger.warning("エラー検知 (タイムアウトの場合、処理は継続されます)")
+        print(e)
         return None
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
