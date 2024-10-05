@@ -78,8 +78,13 @@ def get_payloads():
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
 def send_request(payload,headers):
-    response = requests.post(URL_GET_ADS_INSIGHTS,json=payload,headers=headers)
-    return response
+    session = requests.Session()
+    try:
+        response = session.post(URL_GET_ADS_INSIGHTS,json=payload,headers=headers,timeout=2)
+        return response
+    except requests.RequestException as e:
+        logger.info(e)
+        return None
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
 def send_requests_parallel():
@@ -102,7 +107,10 @@ def getPost() -> str:
 
     results = send_requests_parallel()
     for result in results:
-        print(result.status_code)
+        if results == None:
+            print("None")
+        else:
+            print(result.status_code)
 
     print("Process completed.")
     return "Completed."
