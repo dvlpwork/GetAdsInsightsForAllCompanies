@@ -53,14 +53,10 @@ def get_ad_accounts_from_bigquery():
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
 def init_google_authentication():
-    global headers
     credentials, project = google.auth.default()
     auth_req = Request()
     id_token_credential = id_token.fetch_id_token(auth_req, URL_GET_ADS_INSIGHTS)
-
-    headers = {
-        "Authorization": f"Bearer {id_token_credential}"
-    }
+    return id_token_credential
 
 # //ーーーーーーーーーーーーーーーーーーーーー
 def get_payloads():
@@ -101,9 +97,13 @@ def send_requests_parallel():
 # //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 @app.route("/", methods=["GET","POST"])
 def getPost() -> str:
+    global headers
     print("Process started.")
 
-    init_google_authentication()
+    id_token_credential = init_google_authentication()
+    headers = {
+        "Authorization": f"Bearer {id_token_credential}"
+    }
 
     results = send_requests_parallel()
     for result in results:
