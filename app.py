@@ -28,6 +28,8 @@ import google.auth
 from google.auth.transport.requests import Request
 from google.oauth2 import id_token
 
+import json
+
 import myUtil
 
 # //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
@@ -104,7 +106,7 @@ def getPost() -> str:
 
     # POSTされたパラメータ整形
     params = request.get_json()
-    args = params["arguments"]
+    args = json.loads(params["arguments"])
     print(f'{args} type:{type(args)}')
 
     # パラメータから、今日分/昨日分を判定
