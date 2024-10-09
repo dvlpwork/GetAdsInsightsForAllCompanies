@@ -44,7 +44,7 @@ def get_ad_accounts_from_bigquery():
     query = """
     SELECT *
     FROM `adsanalytics-437205.Master.ad_accounts`
-    LIMIT 10
+    LIMIT 50
     """
     query_job = client.query(query)
     
