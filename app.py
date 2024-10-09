@@ -61,13 +61,14 @@ def init_google_authentication():
     return id_token_credential
 
 # //ーーーーーーーーーーーーーーーーーーーーー
-def get_payloads():
+def create_payloads(target_date):
     ad_accounts = get_ad_accounts_from_bigquery()
     payloads = []
     for account in ad_accounts:
         payload = {
             "arguments":{
-                "account":account
+                "account":account,
+                "target_date":target_date
             }
         }
         payloads.append(payload)
@@ -85,11 +86,10 @@ def send_request(payload,headers):
         return None
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
-def send_requests_parallel():
+def send_requests_parallel(payloads):
     print("Parallel requests started.")
 
     with ThreadPoolExecutor() as executor:
-        payloads = get_payloads()
         headers_list = [headers for _ in range(len(payloads))]
         responses = executor.map(send_request, payloads,headers_list)
 
@@ -121,7 +121,9 @@ def getPost() -> str:
         "Authorization": f"Bearer {id_token_credential}"
     }
 
-    results = send_requests_parallel()
+    # 並列でインサイトを取得
+    payloads = create_payloads(target_date)
+    results = send_requests_parallel(payloads)
     for result in results:
         if result is None:
             print("None")
