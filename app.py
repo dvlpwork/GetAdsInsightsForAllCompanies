@@ -16,7 +16,7 @@ import signal
 import sys
 from types import FrameType
 
-from flask import Flask
+from flask import Flask,request
 
 from utils.logging import logger
 
@@ -27,6 +27,8 @@ from google.cloud import bigquery
 import google.auth
 from google.auth.transport.requests import Request
 from google.oauth2 import id_token
+
+import myUtil
 
 # //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 app = Flask(__name__)
@@ -100,6 +102,20 @@ def getPost() -> str:
     global headers
     print("Process started.")
 
+    # POSTされたパラメータ整形
+    params = request.get_json()
+    args = params["arguments"]
+    print(f'{args} type:{type(args)}')
+
+    # パラメータから、今日分/昨日分を判定
+    if args["target_date_key"]=="today":
+        target_date = myUtil.getToday()
+    elif args["target_date_key"]=="yesterday":
+        target_date = myUtil.getYesterday()
+    else:
+        target_date = myUtil.getToday()
+
+    # get-ads-insightsにアクセスするための認証
     id_token_credential = init_google_authentication()
     headers = {
         "Authorization": f"Bearer {id_token_credential}"
