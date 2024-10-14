@@ -110,12 +110,15 @@ def getPost() -> str:
     print(f'{args} type:{type(args)}')
 
     # パラメータから、今日分/昨日分を判定
-    if args["target_date_key"]=="today":
-        target_date = myUtil.getToday()
-    elif args["target_date_key"]=="yesterday":
-        target_date = myUtil.getYesterday()
-    else:
-        target_date = myUtil.getToday()
+    match args["target_date_key"]:
+        case "today":
+            target_date = myUtil.getToday()
+        case "yesterday":
+            target_date = myUtil.getYesterday()
+        case "custom":
+            target_date = args["target_date"]
+        case _:
+            target_date = myUtil.getToday()
 
     # get-ads-insightsにアクセスするための認証
     id_token_credential = init_google_authentication()
