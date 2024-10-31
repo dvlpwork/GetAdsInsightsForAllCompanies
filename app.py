@@ -70,12 +70,10 @@ def create_payloads(target_date):
     ad_accounts = get_ad_accounts_from_bigquery()
     payloads = []
     for account in ad_accounts:
-        print(account["enable"])
         if not account["enable"]:
             continue
         payload = {"arguments": {"account": account, "target_date": target_date}}
         payloads.append(payload)
-    return []
     return payloads
 
 
