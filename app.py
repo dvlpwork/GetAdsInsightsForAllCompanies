@@ -16,7 +16,7 @@ import signal
 import sys
 from types import FrameType
 
-from flask import Flask,request
+from flask import Flask, request
 
 from utils.logging import logger
 
@@ -39,6 +39,7 @@ URL_GET_ADS_INSIGHTS = "https://adsanalytics-55978488217.asia-northeast1.run.app
 
 headears = {}
 
+
 # //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 def get_ad_accounts_from_bigquery():
     client = bigquery.Client()
@@ -49,11 +50,12 @@ def get_ad_accounts_from_bigquery():
     LIMIT 50
     """
     query_job = client.query(query)
-    
+
     results = query_job.result()
     rows = [dict(row) for row in results]
 
     return rows
+
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
 def init_google_authentication():
@@ -62,30 +64,32 @@ def init_google_authentication():
     id_token_credential = id_token.fetch_id_token(auth_req, URL_GET_ADS_INSIGHTS)
     return id_token_credential
 
+
 # //ーーーーーーーーーーーーーーーーーーーーー
 def create_payloads(target_date):
     ad_accounts = get_ad_accounts_from_bigquery()
     payloads = []
     for account in ad_accounts:
-        payload = {
-            "arguments":{
-                "account":account,
-                "target_date":target_date
-            }
-        }
+        if not account["enable"]:
+            continue
+        payload = {"arguments": {"account": account, "target_date": target_date}}
         payloads.append(payload)
     return payloads
 
+
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
-def send_request(payload,headers):
+def send_request(payload, headers):
     session = requests.Session()
     try:
-        response = session.post(URL_GET_ADS_INSIGHTS,json=payload,headers=headers,timeout=2)
+        response = session.post(
+            URL_GET_ADS_INSIGHTS, json=payload, headers=headers, timeout=2
+        )
         return response
     except requests.RequestException as e:
         logger.warning("エラー検知 (タイムアウトの場合、処理は継続されます)")
         print(e)
         return None
+
 
 # //〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜
 def send_requests_parallel(payloads):
@@ -93,13 +97,14 @@ def send_requests_parallel(payloads):
 
     with ThreadPoolExecutor() as executor:
         headers_list = [headers for _ in range(len(payloads))]
-        responses = executor.map(send_request, payloads,headers_list)
+        responses = executor.map(send_request, payloads, headers_list)
 
     print("Parallel requests completed.")
     return responses
 
+
 # //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
-@app.route("/", methods=["GET","POST"])
+@app.route("/", methods=["GET", "POST"])
 def getPost() -> str:
     global headers
     print("Process started.")
@@ -107,7 +112,7 @@ def getPost() -> str:
     # POSTされたパラメータ整形
     params = request.get_json()
     args = json.loads(params["arguments"])
-    print(f'{args} type:{type(args)}')
+    print(f"{args} type:{type(args)}")
 
     # パラメータから、今日分/昨日分を判定
     match args["target_date_key"]:
@@ -122,9 +127,7 @@ def getPost() -> str:
 
     # get-ads-insightsにアクセスするための認証
     id_token_credential = init_google_authentication()
-    headers = {
-        "Authorization": f"Bearer {id_token_credential}"
-    }
+    headers = {"Authorization": f"Bearer {id_token_credential}"}
 
     # 並列でインサイトを取得
     payloads = create_payloads(target_date)
