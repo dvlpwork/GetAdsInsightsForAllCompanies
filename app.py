@@ -66,13 +66,19 @@ def init_google_authentication():
 
 
 # //ーーーーーーーーーーーーーーーーーーーーー
-def create_payloads(target_date):
+def create_payloads(target_date, ignore_slack_notification=False):
     ad_accounts = get_ad_accounts_from_bigquery()
     payloads = []
     for account in ad_accounts:
         if not account["enable"]:
             continue
-        payload = {"arguments": {"account": account, "target_date": target_date}}
+        payload = {
+            "arguments": {
+                "account": account,
+                "target_date": target_date,
+                "ignore_slack_notification": ignore_slack_notification,
+            }
+        }
         payloads.append(payload)
     return payloads
 
@@ -130,7 +136,7 @@ def getPost() -> str:
     headers = {"Authorization": f"Bearer {id_token_credential}"}
 
     # 並列でインサイトを取得
-    payloads = create_payloads(target_date)
+    payloads = create_payloads(target_date, args["ignore_slack_notification"])
     results = send_requests_parallel(payloads)
     for result in results:
         if result is None:
